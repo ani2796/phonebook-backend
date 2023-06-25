@@ -3,7 +3,9 @@ const morgan = require('morgan');
 
 const app = express();
 
+app.use(express.static('build'));
 app.use(express.json());
+
 
 morgan.token('body', (req, res) => {
     console.log("request body: ", req.body);
@@ -24,29 +26,30 @@ let persons = [
     { 
       "id": 1,
       "name": "Arto Hellas", 
-      "number": "040-123456"
+      "phone": "040-123456"
     },
     { 
       "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
+      "name": "Ada Lovelace",
+      "phone": "39-44-5323523"
     },
     { 
       "id": 3,
       "name": "Dan Abramov", 
-      "number": "12-43-234345"
+      "phone": "12-43-234345"
     },
     { 
       "id": 4,
       "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
+      "phone": "39-23-6423122"
     }
 ]
 
 let personIds = new Set();
 
 app.get("/api/persons", (request, response) => {
-    // console.log("GET request for /api/persons");
+    console.log("GET request for /api/persons");
+
     response.json(persons);
 })
 
@@ -95,6 +98,9 @@ app.post("/api/persons", (request, response) => {
     const body = request.body;
 
     // Name and number must be present
+    console.log("body.name: ", body.name);
+    console.log("body.phone: ", body.phone);
+
     if(!(body.name && body.phone)) {
         response.status(400).json({
             error: "info missingno",
@@ -117,12 +123,13 @@ app.post("/api/persons", (request, response) => {
         id: generateId(),
     }
 
+    console.log("Person added: ", person);
     persons = persons.concat(person);
 
     response.json(person);
 })
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
-});
+});``
