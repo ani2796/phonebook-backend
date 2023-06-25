@@ -1,2 +1,4 @@
 # phonebook-backend
-Node.js backend for a phonebook REST API
+Node.js backend, react frontend for a phonebook
+
+Deployed website: https://phonebook-backend-service-0yc4.onrender.com
