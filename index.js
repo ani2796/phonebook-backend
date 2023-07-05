@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const morgan = require('morgan');
 
 const app = express();
@@ -6,6 +7,26 @@ const app = express();
 app.use(express.static('build'));
 app.use(express.json());
 
+if(process.argv.length < 3) {
+    console.log("Enter password");
+    process.exit(1);
+}
+
+const password = process.argv[2];
+console.log(password);
+
+const url = 
+    `mongodb+srv://anirudhsriram96:${password}@cluster0.g4kqdc2.mongodb.net/`;
+
+mongoose.set('strictQuery', false);
+mongoose.connect(url);
+
+const personSchema = new mongoose.Schema({
+    name: String,
+    phone: String
+});
+
+const Person = mongoose.model('Person', personSchema);
 
 morgan.token('body', (req, res) => {
     console.log("request body: ", req.body);
@@ -49,39 +70,47 @@ let personIds = new Set();
 
 app.get("/api/persons", (request, response) => {
     console.log("GET request for /api/persons");
-
-    response.json(persons);
-})
+    Person.find({}).then(response => {
+        console.log("All persons: ", persons);
+        response.json(persons);
+    });
+});
 
 app.get("/api/info", (request, response) => {
     const now = new Date();
-    const responseString = 
-    `
-    <p> Phonebook has info for ${persons.length} people. </p>
-    <p> ${now} </p>
-    `
+    Person.count({}).then(count => {
+        const responseString = 
+        `<p> Phonebook has info for ${count} people. </p>
+        <p> ${now} </p>`;
 
-    response.send(responseString);
+        response.send(responseString);
+    });
 })
 
 app.get("/api/persons/:id", (request, response) => {
     // console.log("Searching for person: ", request.params.id);
-    const id = Number(request.params.id);
-    const person = persons.find(p => p.id === id);
+    const id = request.params.id;
+    // const person = persons.find(p => p.id === id);
 
-    if(person) {
-        response.json(person);
-    } else {
-        response.status(404).end();
-    }
+    Person.findById(id).then(person => {
+        console.log("GET person: ", person);
+        if(person) {
+            response.json(person);
+        } else {
+            response.status(404).end();
+        }
+    });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-    const id = Number(request.params.id);
+    const id = request.params.id;
     // console.log("Deleting person", id);
-    persons = persons.filter(person => person.id !== id);
+    // persons = persons.filter(person => person.id !== id);
 
-    response.status(204).end();
+    Person.findByIdAndDelete(id).then(person => {
+        console.log("Deleted ", person);
+        response.status(204).end();
+    });
 })
 
 const generateId = () => {
@@ -95,41 +124,44 @@ const generateId = () => {
 }
 
 app.post("/api/persons", (request, response) => {
-    const body = request.body;
+    const name = request.body.name;
+    const phone = request.body.phone;
 
     // Name and number must be present
-    console.log("body.name: ", body.name);
-    console.log("body.phone: ", body.phone);
+    console.log("body.name: ", name);
+    console.log("body.phone: ", phone);
 
-    if(!(body.name && body.phone)) {
+    if(!(name && phone)) {
         response.status(400).json({
             error: "info missingno",
-            nameMissing: Boolean(body.name),
-            phoneMissing: Boolean(body.phone),
-        })
+            nameMissing: Boolean(name),
+            phoneMissing: Boolean(phone),
+        });
         return;
     }
 
     // Name must not already exist
-    if(persons.find(p => p.name === body.name)) {
-        response.status(400).json({
-            error: "Name already exists, must be unique"
-        });
-    }
-
-    const person = {
-        name: body.name,
-        phone: body.phone,
-        id: generateId(),
-    }
-
-    console.log("Person added: ", person);
-    persons = persons.concat(person);
-
-    response.json(person);
+    Person.find({ name }).then(result => {
+        if(result.length > 0) {
+            console.log("Name already exists, must be unique", result);
+            response.status(400).json({
+                error: "Name already exists, must be unique"
+            });
+        } else {
+            const newPerson = new Person({
+                name: name,
+                phone: phone,
+            });
+        
+            newPerson.save().then(newPerson => {
+                console.log("Person added: ", newPerson);
+                response.json(newPerson);
+            });
+        }
+    });
 })
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
-});``
+});
