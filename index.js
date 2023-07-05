@@ -59,6 +59,8 @@ app.get("/api/persons", (request, response) => {
     Person.find({}).then(persons => {
         console.log("All persons: ", persons);
         response.json(persons);
+    }).catch(error => {
+        console.log("Error on GET /api/persons", error);
     });
 });
 
@@ -70,6 +72,8 @@ app.get("/api/info", (request, response) => {
         <p> ${now} </p>`;
 
         response.send(responseString);
+    }).catch(error => {
+        console.log("Error on GET /api/info", error);
     });
 })
 
@@ -85,6 +89,8 @@ app.get("/api/persons/:id", (request, response) => {
         } else {
             response.status(404).end();
         }
+    }).catch(error => {
+        console.log("Error on GET /api/persons/", id, error);
     });
 });
 
@@ -98,6 +104,8 @@ app.delete("/api/persons/:id", (request, response) => {
         console.log("Deleting person, promise success");
         // console.log("Deleted ", person);
         response.status(204).end();
+    }).catch(error => {
+        console.log("Error on DELETE /api/persons/", id, error);
     });
 })
 
@@ -146,6 +154,8 @@ app.post("/api/persons", (request, response) => {
                 response.json(newPerson);
             });
         }
+    }).catch(error => {
+        console.log("Error on POST /api/persons", error);
     });
 })
 
