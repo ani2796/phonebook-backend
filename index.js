@@ -1,22 +1,21 @@
+require('dotenv').config()
+
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
-
+const cors = require('cors');
 const app = express();
 
+app.use(cors());
 app.use(express.static('build'));
 app.use(express.json());
 
-if(process.argv.length < 3) {
-    console.log("Enter password");
-    process.exit(1);
-}
+// if(process.argv.length < 3) {
+//     console.log("Enter password");
+//     process.exit(1);
+// }
 
-const password = process.argv[2];
-console.log(password);
-
-const url = 
-    `mongodb+srv://anirudhsriram96:${password}@cluster0.g4kqdc2.mongodb.net/`;
+const url = process.env.MONGODB_URI;
 
 mongoose.set('strictQuery', false);
 mongoose.connect(url);
@@ -70,7 +69,7 @@ let personIds = new Set();
 
 app.get("/api/persons", (request, response) => {
     console.log("GET request for /api/persons");
-    Person.find({}).then(response => {
+    Person.find({}).then(persons => {
         console.log("All persons: ", persons);
         response.json(persons);
     });
