@@ -1,0 +1,78 @@
+
+> phonebook-backend@1.0.0 start
+> node index.js
+
+Listening on port 3001
+GET request for /api/persons
+All persons:  []
+GET /api/persons 200 2 - 21.487 ms
+body.name:  aaaa
+body.phone:  1111
+Person added:  {
+  name: 'aaaa',
+  phone: '1111',
+  _id: new ObjectId("64a5e5492668a71b04728843"),
+  __v: 0
+}
+request body:  { name: 'aaaa', phone: '1111' }
+POST /api/persons 200 62 - 40.732 ms {"name":"aaaa","phone":"1111"}
+body.name:  aaaasdfq
+body.phone:  123123
+Person added:  {
+  name: 'aaaasdfq',
+  phone: '123123',
+  _id: new ObjectId("64a5e5582668a71b04728846"),
+  __v: 0
+}
+request body:  { name: 'aaaasdfq', phone: '123123' }
+POST /api/persons 200 68 - 95.157 ms {"name":"aaaasdfq","phone":"123123"}
+GET request for /api/persons
+All persons:  [
+  {
+    _id: new ObjectId("64a5e5492668a71b04728843"),
+    name: 'aaaa',
+    phone: '1111',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("64a5e5582668a71b04728846"),
+    name: 'aaaasdfq',
+    phone: '123123',
+    __v: 0
+  }
+]
+GET /api/persons 200 133 - 15.239 ms
+GET request for /api/persons
+All persons:  [
+  {
+    _id: new ObjectId("64a5e5492668a71b04728843"),
+    name: 'aaaa',
+    phone: '1111',
+    __v: 0
+  },
+  {
+    _id: new ObjectId("64a5e5582668a71b04728846"),
+    name: 'aaaasdfq',
+    phone: '123123',
+    __v: 0
+  }
+]
+GET /api/persons 200 133 - 31.761 ms
+body.name:  asdfasdf
+body.phone:  1111
+Person added:  {
+  name: 'asdfasdf',
+  phone: '1111',
+  _id: new ObjectId("64a5e5752668a71b0472884b"),
+  __v: 0
+}
+request body:  { name: 'asdfasdf', phone: '1111' }
+POST /api/persons 200 66 - 67.011 ms {"name":"asdfasdf","phone":"1111"}
+Deleting person 64a5e5582668a71b04728846
+Deleting person
+Deleting person, promise success
+DELETE /api/persons/64a5e5582668a71b04728846 204 - - 20.176 ms
+Deleting person 64a5e5752668a71b0472884b
+Deleting person
+Deleting person, promise success
+DELETE /api/persons/64a5e5752668a71b0472884b 204 - - 37.132 ms

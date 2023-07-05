@@ -1,7 +1,6 @@
 require('dotenv').config()
 
 const express = require('express');
-const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
@@ -10,22 +9,7 @@ app.use(cors());
 app.use(express.static('build'));
 app.use(express.json());
 
-// if(process.argv.length < 3) {
-//     console.log("Enter password");
-//     process.exit(1);
-// }
-
-const url = process.env.MONGODB_URI;
-
-mongoose.set('strictQuery', false);
-mongoose.connect(url);
-
-const personSchema = new mongoose.Schema({
-    name: String,
-    phone: String
-});
-
-const Person = mongoose.model('Person', personSchema);
+// morgan logging
 
 morgan.token('body', (req, res) => {
     console.log("request body: ", req.body);
@@ -42,30 +26,33 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
     }
 }))
 
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "phone": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace",
-      "phone": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "phone": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "phone": "39-23-6423122"
-    }
-]
 
-let personIds = new Set();
+// let persons = [
+//     { 
+//       "id": 1,
+//       "name": "Arto Hellas", 
+//       "phone": "040-123456"
+//     },
+//     { 
+//       "id": 2,
+//       "name": "Ada Lovelace",
+//       "phone": "39-44-5323523"
+//     },
+//     { 
+//       "id": 3,
+//       "name": "Dan Abramov", 
+//       "phone": "12-43-234345"
+//     },
+//     { 
+//       "id": 4,
+//       "name": "Mary Poppendieck", 
+//       "phone": "39-23-6423122"
+//     }
+// ]
+
+// let personIds = new Set();
+
+const Person = require('./models/person');
 
 app.get("/api/persons", (request, response) => {
     console.log("GET request for /api/persons");
@@ -103,24 +90,26 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
     const id = request.params.id;
-    // console.log("Deleting person", id);
+    console.log("Deleting person", id);
     // persons = persons.filter(person => person.id !== id);
 
+    console.log("Deleting person");
     Person.findByIdAndDelete(id).then(person => {
-        console.log("Deleted ", person);
+        console.log("Deleting person, promise success");
+        // console.log("Deleted ", person);
         response.status(204).end();
     });
 })
 
-const generateId = () => {
-    while(true) {
-        const newId = Math.floor(Math.random() * 1_000_000);
-        if(!personIds.has(newId)) {
-            personIds.add(newId);
-            return newId;
-        }
-    }
-}
+// const generateId = () => {
+//     while(true) {
+//         const newId = Math.floor(Math.random() * 1_000_000);
+//         if(!personIds.has(newId)) {
+//             personIds.add(newId);
+//             return newId;
+//         }
+//     }
+// }
 
 app.post("/api/persons", (request, response) => {
     const name = request.body.name;
